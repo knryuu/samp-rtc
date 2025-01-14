@@ -72,9 +72,24 @@ stock bool:RTC_Init__(Text:textDrawText = INVALID_TEXT_DRAW, Float:x = 0.0, Floa
     return true;
 }
 
-stock RTC_SetTextDrawPos(Float:x, Float:y)
+stock bool:RTC_SetTextDrawPos(Float:x, Float:y)
 {
-    return TextDrawSetPos(RTC_SavedTextDraw, x, y);
+    if (RTC_IsTextDrawLocal == false)
+    {
+        return false;
+    }
+    TextDrawSetPos(RTC_SavedTextDraw, x, y);
+    return true;
+}
+
+stock bool:RTC_SetTextDrawSize(size)
+{
+    if (RTC_IsTextDrawLocal == false)
+    {
+        return false;
+    }
+    TextDrawTextSize(RTC_SavedTextDraw, size);
+    return true;
 }
 
 stock RTC_Exit()
@@ -87,7 +102,7 @@ stock RTC_Exit()
 
     if (IsValidTextDraw(RTC_SavedTextDraw))
     {
-        if (RTC_TextDrawStatus == true)
+        if (RTC_IsTextDrawLocal == true)
         {
             RTC_SavedTextDraw = INVALID_TEXT_DRAW; // detach
         }
@@ -128,11 +143,7 @@ public RTC_HeartBeat()
     return 1;
 }
 
-// RTC_Init(10.0, 12.0);
-// RTC_Init(10.0, 12.0, 7);
-// RTC_Init(MyTextDrawText);
-// RTC_Init(MyTextDrawText, 10);
 #define RTC_Init(%0) (_:RTC1:RTC2:RTC3:RTC_Ovrld(%0))
 #define RTC1:RTC2:RTC3:RTC_Ovrld(%8.%9,%1) RTC_Init__(_,%8.%9,%1)
 #define RTC2:RTC3:RTC_Ovrld(%1,%2) RTC_Init__(%1,_,_,%2)
-#define RTC3:RTC_Ovrld(%1) RTC_Init__(%1,_,_,_)
+#define RTC3:RTC_Ovrld(%1) RTC_Init__(%1)
