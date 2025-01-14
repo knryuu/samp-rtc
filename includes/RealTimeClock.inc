@@ -1,6 +1,6 @@
 /*
  * @Title: SA:MP Real Time Clock
- * @Version: 1.0
+ * @Version: 0.0.1-a
  *
  * Copyright (C) 2025  Yuuki X
  *
@@ -34,7 +34,7 @@ static
     RTC_LocalTimeZone = cellmin,
     bool:RTC_IsTextDrawLocal = bool:-1;
 
-stock bool:RTC_Init__(Text:textDrawText = INVALID_TEXT_DRAW, Float:x = 0.0, Float:y = 0.0, localTimezone = cellmin)
+stock bool:RTC_Init(Text:textdraw = INVALID_TEXT_DRAW, timezone = cellmin)
 {
     if (IsValidTextDraw(RTC_SavedTextDraw))
     {
@@ -42,12 +42,12 @@ stock bool:RTC_Init__(Text:textDrawText = INVALID_TEXT_DRAW, Float:x = 0.0, Floa
         return false;
     }
 
-    if (!IsValidTextDraw(textDrawText))
+    if (!IsValidTextDraw(textdraw))
     {
         #if !defined RTC_DISABLE_SECONDS
-        RTC_SavedTextDraw = TextDrawCreate(x, y, "00:00:00");
+        RTC_SavedTextDraw = TextDrawCreate(0.0, 0.0, "00:00:00");
         #else
-        RTC_SavedTextDraw = TextDrawCreate(x, y, "00:00");
+        RTC_SavedTextDraw = TextDrawCreate(0.0, 0.0, "00:00");
         #endif
 
         TextDrawFont(RTC_SavedTextDraw, 1);
@@ -57,14 +57,14 @@ stock bool:RTC_Init__(Text:textDrawText = INVALID_TEXT_DRAW, Float:x = 0.0, Floa
     }
     else
     {
-        RTC_SavedTextDraw = textDrawText;
+        RTC_SavedTextDraw = textdraw;
         RTC_IsTextDrawLocal = false;
         print("RTC LOG: Loaded the textdraw into the internal variable");
     }
 
-    if (-12 <= localTimezone <= 12)
+    if (-12 <= timezone <= 12)
     {
-        RTC_LocalTimeZone = localTimezone;
+        RTC_LocalTimeZone = timezone;
     }
 
     RTC_HeartBeatTimer = SetTimer(#RTC_HeartBeat, 1000, true);
@@ -143,7 +143,3 @@ public RTC_HeartBeat()
     return 1;
 }
 
-#define RTC_Init(%0) (_:RTC1:RTC2:RTC3:RTC_Ovrld(%0))
-#define RTC1:RTC2:RTC3:RTC_Ovrld(%8.%9,%1) RTC_Init__(_,%8.%9,%1)
-#define RTC2:RTC3:RTC_Ovrld(%1,%2) RTC_Init__(%1,_,_,%2)
-#define RTC3:RTC_Ovrld(%1) RTC_Init__(%1)
